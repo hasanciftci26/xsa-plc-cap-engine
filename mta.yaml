@@ -1,0 +1,47 @@
+_schema-version: '3.1'
+ID: plc-cap-engine
+version: 1.0.0
+description: "A simple CAP project."
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npx cds build --production
+modules:
+  - name: plc-cap-engine-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: sap_nodejs_buildpack
+    build-parameters:
+      builder: npm
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: plc-cap-engine-auth
+      - name: plc-cap-engine-db
+
+  - name: plc-cap-engine-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: sap_nodejs_buildpack
+    requires:
+      - name: plc-cap-engine-db
+
+resources:
+  - name: plc-cap-engine-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: default
+      path: ./xs-security.json
+  - name: plc-cap-engine-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

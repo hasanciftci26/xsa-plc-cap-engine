@@ -1,0 +1,47 @@
+{
+  "name": "plc-cap-engine",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^7",
+    "express": "^4",
+    "@sap/xssec": "^3",
+    "@sap/cds-hana": "^2"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7"
+  },
+  "scripts": {
+    "start": "node node_modules/@sap/cds/bin/cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "dummy"
+        },
+        "[production]": {
+          "kind": "xsuaa"
+        }
+      },
+      "db": {
+        "[development]": {
+          "kind": "hana",
+          "pool": {
+            "acquireTimeoutMillis": 100000,
+            "min": 0,
+            "max": 100,
+            "fifo": true
+          }
+        },
+        "[production]": {
+          "kind": "hana"
+        }
+      }
+    }
+  }
+}
